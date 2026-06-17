@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getRecords, getSettings, formatDurationDecimal } from '../store';
+import { getRecords, getSettings, formatDurationDecimal, getMaxStreak } from '../store';
 import { SleepRecord } from '../types';
 
 function getMonthDays(year: number, month: number): string[] {
@@ -19,10 +19,13 @@ export default function MonthlyPage() {
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [settings, setSettings] = useState(getSettings());
+  const [maxStreak, setMaxStreak] = useState(0);
 
   useEffect(() => {
-    setRecords(getRecords());
+    const recs = getRecords();
+    setRecords(recs);
     setSettings(getSettings());
+    setMaxStreak(getMaxStreak(recs));
   }, []);
 
   const monthDays = getMonthDays(year, month);
@@ -88,6 +91,10 @@ export default function MonthlyPage() {
         <div className="stat-item">
           <div className="stat-value unmet">{unmetDays}</div>
           <div className="stat-label">未达标天数</div>
+        </div>
+        <div className="stat-item">
+          <div className="stat-value" style={{ color: '#ff7043' }}>{maxStreak}</div>
+          <div className="stat-label">历史最高连续 (天)</div>
         </div>
       </div>
 

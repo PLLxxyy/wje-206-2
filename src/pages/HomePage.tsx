@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getRecords, getSettings, getYesterdayStr, formatDuration, formatDurationDecimal } from '../store';
+import { getRecords, getSettings, getYesterdayStr, formatDuration, formatDurationDecimal, getCurrentStreak } from '../store';
 import { SleepRecord, QUALITY_LABELS } from '../types';
 
 function StarDisplay({ rating }: { rating: number }) {
@@ -16,6 +16,7 @@ export default function HomePage() {
   const [record, setRecord] = useState<SleepRecord | null>(null);
   const [recentRecords, setRecentRecords] = useState<SleepRecord[]>([]);
   const [settings, setSettings] = useState(getSettings());
+  const [streak, setStreak] = useState(0);
 
   useEffect(() => {
     const records = getRecords();
@@ -24,6 +25,7 @@ export default function HomePage() {
     setRecord(yesterdayRecord || null);
     setRecentRecords(records.slice(0, 7));
     setSettings(getSettings());
+    setStreak(getCurrentStreak(records));
   }, []);
 
   const targetMinutes = settings.targetSleepHours * 60;
@@ -112,6 +114,10 @@ export default function HomePage() {
       )}
 
       <div className="stats-grid">
+        <div className="stat-item">
+          <div className="stat-value" style={{ color: '#ffd54f' }}>{streak}</div>
+          <div className="stat-label">连续记录 (天)</div>
+        </div>
         <div className="stat-item">
           <div className="stat-value">
             {recentRecords.length > 0
